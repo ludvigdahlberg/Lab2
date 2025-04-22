@@ -32,7 +32,7 @@ async function seed() {
     { project_code: "P005", project_name: "Zeus", project_description: "Cloud infrastructure" },
   ]);
 
-  // Create Assignments (correct references)
+  // Create Assignments 
   await ProjectAssignment.insertMany([
     { employee_id: employees[0]._id, project_code: projects[0]._id, start_date: new Date("2024-01-01") },
     { employee_id: employees[1]._id, project_code: projects[1]._id, start_date: new Date("2024-02-01") },
