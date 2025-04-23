@@ -5,10 +5,10 @@ const cors = require("cors");
 const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
-const express = require('express');
-const bodyParser = require('body-parser');
+
+
 
 
 // Middleware
@@ -19,6 +19,11 @@ app.use(express.json());
 const employeeRoutes = require("./routes/employees");
 app.use("/api/employees", employeeRoutes);
 
+const projectRoutes = require("./routes/projects");
+app.use("/api/projects", projectRoutes)
+
+const projectAssignmentRoutes = require("./routes/assignments");
+app.use("/api/projectassignments", projectAssignmentRoutes)
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -29,8 +34,6 @@ mongoose.connect(process.env.MONGO_URI, {
 .catch((err) => {
   console.error("MongoDB connection error:", err);
 });
-
-
 
 app.get("/", (req, res) => {
   res.send("Server is up and running!");
