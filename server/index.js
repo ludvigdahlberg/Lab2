@@ -6,10 +6,8 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-
-
-
-
+// Middleware for serving static files  
+app.use(express.static(path.join(__dirname, "../client/build")));
 
 // Middleware
 app.use(cors());
@@ -38,6 +36,10 @@ mongoose.connect(process.env.MONGO_URI, {
 app.get("/", (req, res) => {
   res.send("Server is up and running!");
 });
+
+app.get('*', (req, res ) => {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+})
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
