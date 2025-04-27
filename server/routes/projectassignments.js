@@ -1,36 +1,20 @@
-const express = require("express");
-const router = express.Router();
-const Project = require("../models/Project");
-const ProjectAssignment = require("../models/ProjectAssignment"); // <- singular, matches model
-const Employee = require("../models/Employee");
+// server/routes/projectassignments.js
+const express           = require("express");
+const router            = express.Router();
+const ProjectAssignment = require("../models/ProjectAssignment");
 
 // POST /api/projectassignments
 router.post("/", async (req, res) => {
   try {
     const { employee_id, project_code, start_date } = req.body;
 
-    // Find employee by employee_id
-    const employee = await Employee.findOne({ employee_id });
-    if (!employee) return res.status(404).json({ message: "Employee not found" });
+    // create and save a new assignment
+    const newPA = new ProjectAssignment({ employee_id, project_code, start_date });
+    await newPA.save();
 
-    // Find project by project_code
-    const project = await Project.findOne({ project_code });
-    if (!project) return res.status(404).json({ message: "Project not found" });
-
-    // Create and save assignment
-    const newAssignment = new ProjectAssignment({
-      employee: employee._id,
-      project: project._id,
-      start_date,
-    });
-
-    await newAssignment.save();
-
-    res.status(201).json({
-      message: "Assignment created",
-      assignment: newAssignment,
-    });
+    res.status(201).json({ message: "Assignment created", assignment: newPA });
   } catch (err) {
+    console.error("POST /api/projectassignments error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
@@ -38,13 +22,23 @@ router.post("/", async (req, res) => {
 // GET /api/projectassignments
 router.get("/", async (req, res) => {
   try {
-    const projectAssignments = await ProjectAssignment.find()
-  .populate("employee", "employee_id full_name")  
-  .populate("project", "project_name");
+    // .find() the assignments, then populate both refs
+    const docs = await ProjectAssignment.find()
+      .populate("employee_id", "employee_id full_name")
+      .populate("project_code", "project_name");
 
-    res.json(projectAssignments);
-  } catch (error) {
-    res.status(404).json({ message: "No project assignments found" });
+    // map each doc into the shape your client expects
+    const assignments = docs.map((pa) => ({
+      _id:        pa._id,
+      employee_id: pa.employee_id,   // now an object { employee_id, full_name }
+      project_code: pa.project_code, // now an object { project_name }
+      start_date: pa.start_date,
+    }));
+
+    res.json(assignments);
+  } catch (err) {
+    console.error("GET /api/projectassignments error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 

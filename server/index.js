@@ -13,18 +13,30 @@ app.use(cors());
 app.use(express.json());
 
 // Mount your API routers
-const employeeRoutes = require("./routes/employees");
-const projectRoutes = require("./routes/projects");
-const assignmentRoutes = require("./routes/projectassignments");
+const employeeRoutes    = require("./routes/employees");
+const projectRoutes     = require("./routes/projects");
+const assignmentRoutes  = require("./routes/projectassignments");
 
-app.use("/api/employees", employeeRoutes);
-app.use("/api/projects", projectRoutes);
+app.use("/api/employees",        employeeRoutes);
+app.use("/api/projects",         projectRoutes);
 app.use("/api/projectassignments", assignmentRoutes);
 
-
-app.use(express.static(path.join(__dirname, '../client/dist')
+// Serve static files from React’s build output
+app.use(
+  express.static(
+    path.join(__dirname, "../client/dist")
   )
 );
+
+// “Catch-all” fallback — serve index.html for any route
+app.get(/.*/, (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "../client/dist/index.html")
+  );
+});
+
+// ─── Database & Server startup ────────────────────────────────────────────────
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("Connected to MongoDB Atlas"))
@@ -33,13 +45,3 @@ mongoose
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
-
-
-app.get("*", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "../client/dist/index.html")
-  );
-});
-
-
-

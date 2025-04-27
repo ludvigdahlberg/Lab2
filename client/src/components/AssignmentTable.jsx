@@ -1,3 +1,4 @@
+// client/src/components/AssignmentTable.jsx
 import { useState, useEffect } from 'react';
 
 export default function AssignmentTable() {
@@ -20,7 +21,7 @@ export default function AssignmentTable() {
 
   useEffect(() => {
     fetchAssignments();
-    const interval = setInterval(fetchAssignments, 6000); // Refresh every minute
+    const interval = setInterval(fetchAssignments, 60000); 
     return () => clearInterval(interval); 
   }, []);
 
@@ -30,8 +31,11 @@ export default function AssignmentTable() {
     setSortDirection(newDirection);
 
     const sorted = [...assignments].sort((a, b) => {
-      if (a[field] < b[field]) return newDirection === 'asc' ? -1 : 1;
-      if (a[field] > b[field]) return newDirection === 'asc' ? 1 : -1;
+      // handles nested fields like "employee_id.employee_id"
+      const aVal = field.split('.').reduce((o, k) => o?.[k], a);
+      const bVal = field.split('.').reduce((o, k) => o?.[k], b);
+      if (aVal < bVal) return newDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return newDirection === 'asc' ? 1 : -1;
       return 0;
     });
     setAssignments(sorted);
@@ -40,21 +44,30 @@ export default function AssignmentTable() {
   return (
     <div>
       <h2>Project Assignments</h2>
-      <table>
+      <table 
+         border={1}
+         cellPadding={8}
+        cellSpacing={0}
+        style={{
+        width: '100%',
+        borderCollapse: 'collapse',
+        textAlign: 'left'
+     }}
+   >
         <thead>
-          <tr>
-            <th onClick={() => handleSort('employee.employee_id')}>Employee ID</th>
-            <th onClick={() => handleSort('employee.full_name')}>Employee Name</th>
-            <th onClick={() => handleSort('project.project_name')}>Project Name</th>
+          <tr style={{ backgroundColor: '#f2f2f2',cursor: 'pointer'}}>
+            <th onClick={() => handleSort('employee_id.employee_id')}>Employee ID</th>
+            <th onClick={() => handleSort('employee_id.full_name')}>Employee Name</th>
+            <th onClick={() => handleSort('project_code.project_name')}>Project Name</th>
             <th onClick={() => handleSort('start_date')}>Start Date</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody style={{ border: '1px solid black'}}>
           {assignments.map((assign) => (
-            <tr key={assign._id}>
-              <td>{assign.employee?.employee_id}</td>
-              <td>{assign.employee?.full_name}</td>
-              <td>{assign.project?.project_name}</td>
+            <tr key={assign._id} style={{ border: '1px solid black'}}>
+              <td>{assign.employee_id?.employee_id}</td>
+              <td>{assign.employee_id?.full_name}</td>
+              <td>{assign.project_code?.project_name}</td>
               <td>{new Date(assign.start_date).toLocaleDateString()}</td>
             </tr>
           ))}
