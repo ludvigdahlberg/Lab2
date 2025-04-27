@@ -39,8 +39,8 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const projectAssignments = await ProjectAssignment.find()
-    .populate("employee_id", "full_name")
-    .populate("project_code", "project_name");
+  .populate("employee", "employee_id full_name")  
+  .populate("project", "project_name");
 
     res.json(projectAssignments);
   } catch (error) {

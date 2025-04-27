@@ -1,3 +1,4 @@
+// server/index.js
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -6,41 +7,39 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-// Middleware for serving static files  
-app.use(express.static(path.join(__dirname, "../client/build")));
 
-// Middleware
+// Enable CORS and JSON parsing
 app.use(cors());
 app.use(express.json());
 
-//routes
+// Mount your API routers
 const employeeRoutes = require("./routes/employees");
-app.use("/api/employees", employeeRoutes);
-
 const projectRoutes = require("./routes/projects");
-app.use("/api/projects", projectRoutes)
+const assignmentRoutes = require("./routes/projectassignments");
 
-const projectAssignmentRoutes = require("./routes/assignments");
-app.use("/api/projectassignments", projectAssignmentRoutes)
+app.use("/api/employees", employeeRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/projectassignments", assignmentRoutes);
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-})
-.then(() => {
-  console.log("Connected to MongoDB Atlas");
-})
-.catch((err) => {
-  console.error("MongoDB connection error:", err);
-});
 
-app.get("/", (req, res) => {
-  res.send("Server is up and running!");
-});
-
-app.get('*', (req, res ) => {
-  res.sendFile(path.join(__dirname, '../client/build/index.html'));
-})
+app.use(express.static(path.join(__dirname, '../client/dist')
+  )
+);
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("Connected to MongoDB Atlas"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+
+
+app.get("*", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "../client/dist/index.html")
+  );
+});
+
+
+

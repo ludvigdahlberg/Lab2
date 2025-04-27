@@ -14,7 +14,7 @@ router.post("/",async (req,res) =>{
             return res.status(400).json({message: "Project code or project name already exists"});
         }
 
-        const newProject = new Project({roject_code,project_name, project_description})
+        const newProject = new Project({project_code,project_name, project_description})
         await newProject.save();
 
         res.status(201).json({message: "Project created", project: newProject});
@@ -24,5 +24,14 @@ router.post("/",async (req,res) =>{
 
     }
 })
+// GET /api/projects
+router.get("/", async (req, res) => {
+    try {
+      const projects = await Project.find();
+      res.json(projects);
+    } catch (err) {
+      res.status(500).json({ message: "Server error", error: err.message });
+    }
+  });
 
 module.exports=router;
