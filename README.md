@@ -1,0 +1,1 @@
+The main problem i had was with connecting the server to the frontend. I had a problem with the * route and I solved it by reading the github about that specific type error. 
