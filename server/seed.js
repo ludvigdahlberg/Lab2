@@ -41,15 +41,14 @@ async function seed() {
     employees.push(doc);
   }
   console.log(" Seeded Employees");
+const rawProjects = [
+  { project_code: "P001", project_name: "Apollo",   project_description: "Space exploration", start_date: "2025-01-15" },
+  { project_code: "P002", project_name: "Hermes",   project_description: "Logistics platform", start_date: "2025-02-01" },
+  { project_code: "P003", project_name: "Athena",   project_description: "AI research",         start_date: "2025-03-10" },
+  { project_code: "P004", project_name: "Zephyr",   project_description: "Wind energy",         start_date: "2025-04-20" },
+  { project_code: "P005", project_name: "Poseidon", project_description: "Underwater mapping",  start_date: "2025-05-05" },
+];
 
-  // 4. Create 5 projects
-  const rawProjects = [
-    { project_code: "P001", project_name: "Apollo",        project_description: "Space exploration" },
-    { project_code: "P002", project_name: "Hermes",        project_description: "Logistics platform" },
-    { project_code: "P003", project_name: "Athena",        project_description: "AI research" },
-    { project_code: "P004", project_name: "Zephyr",        project_description: "Wind energy" },
-    { project_code: "P005", project_name: "Poseidon",      project_description: "Underwater mapping" },
-  ];
 
   const projects = [];
   for (let p of rawProjects) {
